@@ -16,35 +16,35 @@ Unless required by applicable law or agreed to in writing, software distributed 
 #import <AppKit/NSWorkspace.h>
 
 int main (int argc, const char * argv[]) {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    @autoreleasepool {
 	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-	if (!argv[1]) { // There is no argument
-		if (![workspace launchApplication:@"Smultron.app"]) {
-			NSLog(@"Can't open Smultron");
-		}
-	} else { // We should open files
-		short i = 1;
-		NSString *path;
-		while (argv[i]) {
-			path = [[NSString alloc] initWithUTF8String:argv[i]];
-			if (![fileManager fileExistsAtPath:path]) { // Check if file exists, otherwise create it
-				NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
-				NSNumber *creatorCode = [NSNumber numberWithUnsignedLong:'SMUL'];
-				NSNumber *typeCode = [NSNumber numberWithUnsignedLong:'SMLd'];
-				[attributes setObject:creatorCode forKey:@"NSFileHFSCreatorCode"];
-				[attributes setObject:typeCode forKey:@"NSFileHFSTypeCode"];
-				[fileManager createFileAtPath:path contents:nil attributes:attributes];
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+		if (!argv[1]) { // There is no argument
+			if (![workspace launchApplication:@"Smultron.app"]) {
+				NSLog(@"Can't open Smultron");
 			}
+		} else { // We should open files
+			short i = 1;
+			NSString *path;
+			while (argv[i]) {
+				path = [[NSString alloc] initWithUTF8String:argv[i]];
+				if (![fileManager fileExistsAtPath:path]) { // Check if file exists, otherwise create it
+					NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
+					NSNumber *creatorCode = [NSNumber numberWithUnsignedLong:'SMUL'];
+					NSNumber *typeCode = [NSNumber numberWithUnsignedLong:'SMLd'];
+					[attributes setObject:creatorCode forKey:@"NSFileHFSCreatorCode"];
+					[attributes setObject:typeCode forKey:@"NSFileHFSTypeCode"];
+					[fileManager createFileAtPath:path contents:nil attributes:attributes];
+				}
 
-			if (![workspace openFile:path withApplication:@"Smultron.app"]) { // Open file
-				NSLog(@"Couldn't open %@ with Smultron", path);
+				if (![workspace openFile:path withApplication:@"Smultron.app"]) { // Open file
+					NSLog(@"Couldn't open %@ with Smultron", path);
+				}
+				i++;
 			}
-			i++;
 		}
-	}
 
-    [pool drain];
+    }
     return 0;
 }
